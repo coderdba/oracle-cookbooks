@@ -39,11 +39,14 @@ end
 # Create users - begin
 # https://docs.chef.io/resource_user.html
 
-# Create oracle user
+# Create users
+# NOTE: gid be without quotes - because upon re-run it is erroring out with the following error:
+#                                     User: Couldn't lookup integer GID for group name 901
+
 user 'oracle' do
   comment 'Oracle DB and Client software owner'
   uid '91'
-  gid '501'
+  gid 501
   home '/home/oracle'
   shell '/bin/bash'
   password 'oracle'
@@ -52,7 +55,7 @@ end
 user 'grid' do
   comment 'Oracle grid software owner'
   uid '92'
-  gid '501'
+  gid 501
   home '/home/oracle'
   shell '/bin/bash'
   password 'oracle'
@@ -61,7 +64,7 @@ end
 user 'oem' do
   comment 'Oracle OEM software owner'
   uid '93'
-  gid '501'
+  gid 501
   home '/home/oracle'
   shell '/bin/bash'
   password 'oracle'
