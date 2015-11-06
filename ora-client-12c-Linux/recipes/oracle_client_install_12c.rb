@@ -5,12 +5,18 @@
 #
 #
 
+require 'etc'
+
 # Variables set for use by templates and others
 
+responseFile='/tmp/oracle_client_12c_unix.rsp'
+softwareFolder=node[:softwareFolder]
+softwareBundle=node[:ora_client12c][:softwareBundle]
+softwareCopy=/tmp/#{softwareBundle}
+unzipDir='/tmp/oracle_client_unzip'
+runInstaller='#{unzipDir}/client/runInstaller'
+
 # Create the response file from template
-
-responseFile=/tmp/oracle_client_12c_unix.rsp
-
 #template '/tmp/oracle_client_12c_unix.rsp' do
 template '#{responseFile}' do
   source 'oracle_client_12c_unix_rsp.erb'
@@ -28,22 +34,21 @@ template '#{responseFile}' do
   })
 end
 
+ 
+# Unzip the software zip and run the runInstaller
+execute 'copy unzip install oracle software bundle' do
 
-# Unzip the software zip 
-#{node[:softwareFolder]/node[:ora_client12c][:softwareBundle]'}
-softwareFolder=node[:softwareFolder]
-softwareBundle=node[:ora_client12c][:softwareBundle]
-softwareCopy=/tmp/#{softwareBundle}
-
-execute 'copy and unzip oracle software bundle' do
-
+  ##{node[:softwareFolder]/node[:ora_client12c][:softwareBundle]'}
   #command "cp #{softwareFolder}/#{softwareBundle} /tmp/" 
   ##creates #{softwareCopy}
 
-  command "mkdir /tmp/oracle_client12c"
-  command "unzip #{softwareFolder}/#{softwareBundle} -d /tmp/oracle_clientc"
+  #command "mkdir /tmp/oracle_client_unzip"
+  command "su - oracle -c 'mkdir #{unzipDir}' "
+  command "su - oracle -c 'unzip #{softwareFolder}/#{softwareBundle} -d #{unzipDir}' "
 
-end
+  command "su - oracle -c '#{runInstaller} -silent -noconfig -responseFile #{responseFile}' "
+
+  end
 
 #execute 'install oracle software' do
 
