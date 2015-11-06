@@ -8,13 +8,14 @@
 # Variables set for use by templates and others
 
 # Create the response file from template
-#owner 'oracle'
-#group 'oinstall'
 
-template '/tmp/oracle_client_12c_unix.rsp' do
+responseFile=/tmp/oracle_client_12c_unix.rsp
+
+#template '/tmp/oracle_client_12c_unix.rsp' do
+template '#{responseFile}' do
   source 'oracle_client_12c_unix_rsp.erb'
-   owner 'root'
-   group 'root'
+   owner 'oracle'
+   group 'oinstall'
     mode '0755'
     variables({
      :installGroup  => node[:oracle][:installGroup],
@@ -26,3 +27,26 @@ template '/tmp/oracle_client_12c_unix.rsp' do
      :hostname      => node[:hostname]
   })
 end
+
+
+# Unzip the software zip 
+#{node[:softwareFolder]/node[:ora_client12c][:softwareBundle]'}
+softwareFolder=node[:softwareFolder]
+softwareBundle=node[:ora_client12c][:softwareBundle]
+softwareCopy=/tmp/#{softwareBundle}
+
+execute 'copy and unzip oracle software bundle' do
+
+  #command "cp #{softwareFolder}/#{softwareBundle} /tmp/" 
+  ##creates #{softwareCopy}
+
+  command "mkdir /tmp/oracle_client12c"
+  command "unzip #{softwareFolder}/#{softwareBundle} -d /tmp/oracle_clientc"
+
+end
+
+#execute 'install oracle software' do
+
+#/directory_path/runInstaller [-silent] [-noconfig]  -responseFile responsefilename
+
+#end
