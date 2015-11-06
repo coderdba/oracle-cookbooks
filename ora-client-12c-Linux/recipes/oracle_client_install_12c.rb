@@ -16,6 +16,7 @@ softwareCopy=/tmp/#{softwareBundle}
 unzipDir='/tmp/oracle_client_unzip'
 #runInstaller='#{unzipDir}/client/runInstaller'
 runInstaller='/tmp/oracle_client_unzip/client/runInstaller'
+oraHome= node[:ora_client12c][:oraHome]
 
 # Create the response file from template
 template '/tmp/oracle_client_12c_unix.rsp' do
@@ -39,22 +40,22 @@ end
 # Unzip the software zip and run the runInstaller
 execute 'copy unzip oracle software bundle' do
 
-  command "su oracle -c 'mkdir #{unzipDir}' "
+  command "su oracle -c 'mkdir -p #{unzipDir}' "
   command "su oracle -c 'unzip #{softwareFolder}/#{softwareBundle} -d #{unzipDir}' "
 
 end
 
-
 execute 'install oracle software bundle' do
   command "su oracle -c '#{runInstaller} -silent -noconfig -ignoreSysPrereqs -ignorePrereq -responseFile #{responseFile} > /tmp/out 2>> /tmp/out' "
-  #command "su oracle -c 'touch #{runInstaller}' "
+  command "sleep 120"
+  ##command "su oracle -c 'touch #{runInstaller}' "
 
 end
 
-execute 'Run root.sh' do
-  command "#{oraHome}/root.sh"
+execute 'Run root shell' do
+  command "su root -c '#{oraHome}/root.sh'"
 end
 
-execute 'Run orainstRoot.sh' do
-  command "#{oraHome}/orainstRoot.sh"
+execute 'Run orainstRoot shell' do
+  command "su root -c '#{oraHome}/orainstRoot.sh'"
 end
