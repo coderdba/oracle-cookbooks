@@ -13,7 +13,7 @@ default['oracle']['oraBase'] = '/u01/app/oracle'
 default['softwareFolder'] = '/vagrant'
 
 default['ora_client12c']['installUser'] = 'oracle'
-default['ora_client12c']['orahome']  = '/u01/app/oracle/product/client12c1'
+default['ora_client12c']['oraHome']  = '/u01/app/oracle/product/client12c1'
 default['ora_client12c']['installType']  = 'Administrator'
 default['ora_client12c']['softwareBundle']  = 'linuxamd64_12c_client.zip'
 default['ora_client12c']['installScreenOutputLog'] = '/tmp/ora_client12c_inst.out'
