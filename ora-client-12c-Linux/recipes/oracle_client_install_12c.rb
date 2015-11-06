@@ -5,8 +5,6 @@
 #
 #
 
-require 'etc'
-
 # Variables set for use by templates and others
 
 responseFile='/tmp/oracle_client_12c_unix.rsp'
@@ -17,6 +15,7 @@ unzipDir='/tmp/oracle_client_unzip'
 #runInstaller='#{unzipDir}/client/runInstaller'
 runInstaller='/tmp/oracle_client_unzip/client/runInstaller'
 oraHome= node[:ora_client12c][:oraHome]
+oraInventory=node[:oracle][:oraInventory]
 
 # Create the response file from template
 template '/tmp/oracle_client_12c_unix.rsp' do
@@ -37,25 +36,30 @@ template '/tmp/oracle_client_12c_unix.rsp' do
 end
 
  
-# Unzip the software zip and run the runInstaller
-execute 'copy unzip oracle software bundle' do
-
+execute 'create unzip directory for oracle software bundle' do
   command "su oracle -c 'mkdir -p #{unzipDir}' "
-  command "su oracle -c 'unzip #{softwareFolder}/#{softwareBundle} -d #{unzipDir}' "
+end
 
+execute 'unzip oracle software bundle' do
+  command "su oracle -c 'unzip #{softwareFolder}/#{softwareBundle} -d #{unzipDir}' "
 end
 
 execute 'install oracle software bundle' do
-  command "su oracle -c '#{runInstaller} -silent -noconfig -ignoreSysPrereqs -ignorePrereq -responseFile #{responseFile} > /tmp/out 2>> /tmp/out' "
-  command "sleep 120"
+  command "su oracle -c '#{runInstaller} -silent -waitforcompletion -noconfig -ignoreSysPrereqs -ignorePrereq -responseFile #{responseFile} > /tmp/out 2>> /tmp/out' "
   ##command "su oracle -c 'touch #{runInstaller}' "
-
 end
 
-execute 'Run root shell' do
-  command "su root -c '#{oraHome}/root.sh'"
+execute 'sleep a while for all filecopy to end' do
+  command "sleep 60"
 end
 
-execute 'Run orainstRoot shell' do
-  command "su root -c '#{oraHome}/orainstRoot.sh'"
+execute 'run root shell' do
+  #command "sudo su - root -c '#{oraHome}/root.sh'"
+  user "root"
+  command "#{oraHome}/root.sh"
 end
+
+execute 'run orainstRoot shell' do
+  command "sudo su - root -c '#{oraInventory}/orainstRoot.sh'"
+end
+
