@@ -1,6 +1,4 @@
 #
-# Author: Gowrish.Mallipattana
-#
 # Oracle client installation recipe
 #
 #
